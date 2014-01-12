@@ -3,7 +3,7 @@ Sublime Text Math Evaluator
 
 Evaluate mathematical expressions in Sublime Text selection regions inline.
 
-Use the command control + shift + m to evaluate all mathematical expressions in selection areas.
+Use the command `control + shift + m` (or `super + shift + m`) to evaluate all mathematical expressions in selection areas.
 
 Symbols and functions supported:
 
