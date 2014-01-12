@@ -110,8 +110,11 @@ class SublimemathCommand(sublime_plugin.TextCommand):
 				s = self.view.substr(region)
 				evaluated = str(nsp.eval(s))
 				if evaluated != 'None':
-					# if str(evaluated)[-2:] == ".0":
-					# 	evaluated = str(evaluated)[:-2]
+					if str(evaluated)[-2:] == ".0":
+						evaluated = str(evaluated)[:-2]
+					dotpos = evaluated.find('.')
+					if dotpos != -1:
+						evaluated = evaluated[:dotpos + 5]
 					self.view.replace(edit, region, evaluated)
 
 nsp = NumericStringParser()
