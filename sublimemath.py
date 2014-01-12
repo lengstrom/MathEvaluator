@@ -3,6 +3,7 @@ import sublime, sublime_plugin
 import pyparsing as pyp #http://stackoverflow.com/questions/19799990/sublime-text-plugin-adding-python-libraries
 import math
 import operator
+import re
 
 class NumericStringParser(object):
 	'''
@@ -108,7 +109,26 @@ class SublimemathCommand(sublime_plugin.TextCommand):
 		for region in self.view.sel():
 			if not region.empty():
 				s = self.view.substr(region)
+				strlen = len(s)
+				i = 0
+
+				#Parser has some issues with decimals
+				while i != strlen:
+					if s[i] == '.':
+						if i == 0:
+							print "@1"
+							s = "0" + s
+							strlen = strlen + 1
+							i = i + 1
+						else:
+							print "@2"
+							if not s[i - 1].isdigit():
+								strlen = strlen + 1
+								i = i + 1
+								s = s[:i - 1] + '0' + s[i - 1:]
+					i = i + 1
 				evaluated = str(nsp.eval(s))
+
 				if evaluated != 'None':
 					if str(evaluated)[-2:] == ".0":
 						evaluated = str(evaluated)[:-2]
