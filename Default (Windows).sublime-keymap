@@ -1,4 +1,4 @@
 [{
-    "keys": ["super+shift+m"],
+    "keys": ["ctrl+shift+m"],
     "command": "mathevaluator"
 }]
