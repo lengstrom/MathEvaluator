@@ -3,7 +3,6 @@ import sublime, sublime_plugin
 import pyparsing as pyp #http://stackoverflow.com/questions/19799990/sublime-text-plugin-adding-python-libraries
 import math
 import operator
-import re
 
 class NumericStringParser(object):
 	'''
