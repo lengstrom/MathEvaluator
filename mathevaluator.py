@@ -103,7 +103,7 @@ class NumericStringParser(object):
 		except:
 			False
 
-class SublimemathCommand(sublime_plugin.TextCommand):
+class mathevaluatorCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		for region in self.view.sel():
 			if not region.empty():

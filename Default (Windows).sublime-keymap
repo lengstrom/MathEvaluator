@@ -1,6 +1,4 @@
-[
-    {
-        "keys":["ctrl+alt+n"],
-        "command": "sublimemath"
-    }
-]
+[{
+    "keys": ["super+shift+m"],
+    "command": "mathevaluator"
+}]
