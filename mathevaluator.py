@@ -119,9 +119,7 @@ class mathevaluatorCommand(sublime_plugin.TextCommand):
 								i = i + 1
 								s = s[:i - 1] + '0' + s[i - 1:]
 					i = i + 1
-				print s
 				evaluated = str(test(s))
-				print evaluated
 				if evaluated != 'None' and evaluated != 'False':
 					if str(evaluated)[-2:] == ".0":
 						evaluated = str(evaluated)[:-2]
