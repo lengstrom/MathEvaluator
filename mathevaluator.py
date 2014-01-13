@@ -104,7 +104,6 @@ def test( s):
   
 class mathevaluatorCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		print "running"
 		for region in self.view.sel():
 			if not region.empty():
 				s = self.view.substr(region)
