@@ -50,10 +50,10 @@ def BNF():
 		# by defining exponentiation as "atom [ ^ factor ]..." instead of "atom [ ^ atom ]...", we get right-to-left exponents, instead of left-to-righ
 		# that is, 2^3^2 = 2^(3^2), not (2^3)^2.
 		factor = Forward()
-		factor << atom + ZeroOrMore( ( expop + factor ).setParseAction( pushFirst ) )
+		factor <<= atom + ZeroOrMore( ( expop + factor ).setParseAction( pushFirst ) )
 
 		term = factor + ZeroOrMore( ( multop + factor ).setParseAction( pushFirst ) )
-		expr << term + ZeroOrMore( ( addop + term ).setParseAction( pushFirst ) )
+		expr <<= term + ZeroOrMore( ( addop + term ).setParseAction( pushFirst ) )
 		bnf = expr
 	return bnf
 
@@ -2914,17 +2914,17 @@ class SkipTo(ParseElementEnhance):
 class Forward(ParseElementEnhance):
 	"""Forward declaration of an expression to be defined later -
 	   used for recursive grammars, such as algebraic infix notation.
-	   When the expression is known, it is assigned to the C{Forward} variable using the '<<' operator.
+	   When the expression is known, it is assigned to the C{Forward} variable using the '<<=' operator.
 
 	   Note: take care when assigning to C{Forward} not to overlook precedence of operators.
-	   Specifically, '|' has a lower precedence than '<<', so that::
-		  fwdExpr << a | b | c
+	   Specifically, '|' has a lower precedence than '<<=', so that::
+		  fwdExpr <<= a | b | c
 	   will actually be evaluated as::
-		  (fwdExpr << a) | b | c
+		  (fwdExpr <<= a) | b | c
 	   thereby leaving b and c out as parseable alternatives.  It is recommended that you
 	   explicitly group the values inserted into the C{Forward}::
-		  fwdExpr << (a | b | c)
-	   Converting to use the '<<=' operator instead will avoid this problem.
+		  fwdExpr <<= (a | b | c)
+	   Converting to use the '<<==' operator instead will avoid this problem.
 	"""
 	def __init__( self, other=None ):
 		super(Forward,self).__init__( other, savelist=False )
@@ -2944,9 +2944,9 @@ class Forward(ParseElementEnhance):
 		return self
 
 	def __lshift__(self, other):
-		warnings.warn("Operator '<<' is deprecated, use '<<=' instead",
+		warnings.warn("Operator '<<=' is deprecated, use '<<==' instead",
 					   DeprecationWarning,stacklevel=2)
-		self <<= other
+		self <<== other
 		return None
 
 	def leaveWhitespace( self ):
@@ -2987,7 +2987,7 @@ class Forward(ParseElementEnhance):
 			return super(Forward,self).copy()
 		else:
 			ret = Forward()
-			ret << self
+			ret <<= self
 			return ret
 
 class _ForwardNoRecurse(Forward):
@@ -3121,9 +3121,9 @@ def traceParseAction(f):
 		try:
 			ret = f(*paArgs)
 		except Exception as exc:
-			sys.stderr.write( "<<leaving %s (exception: %s)\n" % (thisFunc,exc) )
+			sys.stderr.write( "<<=leaving %s (exception: %s)\n" % (thisFunc,exc) )
 			raise
-		sys.stderr.write( "<<leaving %s (ret: %s)\n" % (thisFunc,ret) )
+		sys.stderr.write( "<<=leaving %s (ret: %s)\n" % (thisFunc,ret) )
 		return ret
 	try:
 		z.__name__ = f.__name__
@@ -3158,7 +3158,7 @@ def countedArray( expr, intExpr=None ):
 	arrayExpr = Forward()
 	def countFieldParseAction(s,l,t):
 		n = t[0]
-		arrayExpr << (n and Group(And([expr]*n)) or Group(empty))
+		arrayExpr <<= (n and Group(And([expr]*n)) or Group(empty))
 		return []
 	if intExpr is None:
 		intExpr = Word(nums).setParseAction(lambda t:int(t[0]))
@@ -3193,13 +3193,13 @@ def matchPreviousLiteral(expr):
 	def copyTokenToRepeater(s,l,t):
 		if t:
 			if len(t) == 1:
-				rep << t[0]
+				rep <<= t[0]
 			else:
 				# flatten t tokens
 				tflat = _flatten(t.asList())
-				rep << And( [ Literal(tt) for tt in tflat ] )
+				rep <<= And( [ Literal(tt) for tt in tflat ] )
 		else:
-			rep << Empty()
+			rep <<= Empty()
 	expr.addParseAction(copyTokenToRepeater, callDuringTry=True)
 	return rep
 
@@ -3218,7 +3218,7 @@ def matchPreviousExpr(expr):
 	"""
 	rep = Forward()
 	e2 = expr.copy()
-	rep << e2
+	rep <<= e2
 	def copyTokenToRepeater(s,l,t):
 		matchTokens = _flatten(t.asList())
 		def mustMatchTheseTokens(s,l,t):
@@ -3580,9 +3580,9 @@ def infixNotation( baseExpr, opList, lpar=Suppress('('), rpar=Suppress(')') ):
 			raise ValueError("operator must indicate right or left associativity")
 		if pa:
 			matchExpr.setParseAction( pa )
-		thisExpr << ( matchExpr | lastExpr )
+		thisExpr <<= ( matchExpr | lastExpr )
 		lastExpr = thisExpr
-	ret << lastExpr
+	ret <<= lastExpr
 	return ret
 operatorPrecedence = infixNotation
 
@@ -3638,9 +3638,9 @@ def nestedExpr(opener="(", closer=")", content=None, ignoreExpr=quotedString.cop
 			raise ValueError("opening and closing arguments must be strings if no content expression is given")
 	ret = Forward()
 	if ignoreExpr is not None:
-		ret << Group( Suppress(opener) + ZeroOrMore( ignoreExpr | ret | content ) + Suppress(closer) )
+		ret <<= Group( Suppress(opener) + ZeroOrMore( ignoreExpr | ret | content ) + Suppress(closer) )
 	else:
-		ret << Group( Suppress(opener) + ZeroOrMore( ret | content )  + Suppress(closer) )
+		ret <<= Group( Suppress(opener) + ZeroOrMore( ret | content )  + Suppress(closer) )
 	return ret
 
 def indentedBlock(blockStatementExpr, indentStack, indent=True):
