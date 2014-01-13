@@ -1,2 +1,2 @@
-old.zip
-*.pyc
+./old.zip
+./*.pyc
