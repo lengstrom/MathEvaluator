@@ -119,6 +119,7 @@ class mathevaluatorCommand(sublime_plugin.TextCommand):
 								i = i + 1
 								s = s[:i - 1] + '0' + s[i - 1:]
 					i = i + 1
+
 				evaluated = str(test(s))
 				if evaluated != 'None' and evaluated != 'False':
 					if str(evaluated)[-2:] == ".0":
@@ -2924,7 +2925,7 @@ class Forward(ParseElementEnhance):
 	   thereby leaving b and c out as parseable alternatives.  It is recommended that you
 	   explicitly group the values inserted into the C{Forward}::
 		  fwdExpr <<= (a | b | c)
-	   Converting to use the '<<==' operator instead will avoid this problem.
+	   Converting to use the '<<=' operator instead will avoid this problem.
 	"""
 	def __init__( self, other=None ):
 		super(Forward,self).__init__( other, savelist=False )
@@ -2944,9 +2945,9 @@ class Forward(ParseElementEnhance):
 		return self
 
 	def __lshift__(self, other):
-		warnings.warn("Operator '<<=' is deprecated, use '<<==' instead",
+		warnings.warn("Operator '<<=' is deprecated, use '<<=' instead",
 					   DeprecationWarning,stacklevel=2)
-		self <<== other
+		self <<= other
 		return None
 
 	def leaveWhitespace( self ):
