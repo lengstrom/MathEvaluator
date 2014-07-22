@@ -18,7 +18,7 @@ Symbols and functions supported:
 |^          | 3 ^ 4         | 81        | E          | 5E4           | 50000     |
 |sin        | sin(4)        | -0.7568   | e          | e             | 2.7182    |
 |cos        | cos(4)        | -0.6536   | pi         | pi            | 3.1415    |
-|tan        | tan(4)        | 1.1578    |            |               |           |
+|tan        | tan(4)        | 1.1578    | 
 In Action
 -----------
 ![In action](http://i.imgur.com/8cXEAHB.gif "Evaluator in Action")
