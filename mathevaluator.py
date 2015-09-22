@@ -38,13 +38,13 @@ environment = {
     "&":Atom(lambda x, y: operator.and_(int(x), int(y)),"infix"),
     "^":Atom(lambda x, y: operator.xor(int(x), int(y)),"infix"),
     "|":Atom(lambda x, y: operator.or_(int(x), int(y)),"infix"),
-    "~":Atom(lambda x: operator.invert(int(x)),"leftfix"),
-    # "-":Atom(operator.neg,"leftfix"),
-    # "+":Atom(operator.neg,"leftfix"),
-    "0b":Atom(lambda x: eval("0b"+str(int(x))),"leftfix"),
-    "0x":Atom(lambda x: eval("0x"+str(int(x))),"leftfix"),
-    "ln":Atom(math.log, "leftfix"),
-    "sqrt":Atom(math.sqrt, "leftfix"),
+    "~":Atom(lambda x: operator.invert(int(x)),"prefix"),
+    # "-":Atom(operator.neg,"prefix"),
+    # "+":Atom(operator.neg,"prefix"),
+    "0b":Atom(lambda x: eval("0b"+str(int(x))),"prefix"),
+    "0x":Atom(lambda x: eval("0x"+str(int(x))),"prefix"),
+    "ln":Atom(math.log, "prefix"),
+    "sqrt":Atom(math.sqrt, "prefix"),
     "pi":Atom(math.pi, "value"),
     "**":Atom(operator.pow,"infix"),
 }
@@ -128,7 +128,7 @@ def eval_(a, b, li):
                     return eval_(val, c_, li)
                 else:
                     return val
-            elif b.type_ == "leftfix":
+            elif b.type_ == "prefix":
                 c = li.pop(0)
                 val = b.value(eval_(b, c, []))
                 if len(li) != 0:
