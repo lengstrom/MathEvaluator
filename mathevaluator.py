@@ -109,7 +109,7 @@ def eval_(a, b, li):
             val = b.value
             if len(li) == 0:
                 return val
-            else:
+            else: 
                 c = li.pop(0)
                 return eval_(val, c, li)
         else:
@@ -136,35 +136,36 @@ def eval_(a, b, li):
                     return eval_(val, c_, li)
                 else:
                     return val
-        
+
+def eval_string(s):
+    tokens = tokenize(s)
+    ast = read_from_tokens(tokens)
+    value = eval_(None, ast, [])
+    return value
     
-# class mathevaluatorCommand(sublime_plugin.TextCommand):
-#     def run(self, edit):
-#         for region in self.view.sel():
-#             if not region.empty():
-#                 s = self.view.substr(region)
-#                 strlen = len(s)
-#                 i = 0
-#                 while i != strlen:
-#                     if s[i] == '.':
-#                         if i == 0:
-#                             s = "0" + s
-#                             strlen = strlen + 1
-#                             i = i + 1
-#                         else:
-#                             if not s[i - 1].isdigit():
-#                                 strlen = strlen + 1
-#                                 i = i + 1
-#                                 s = s[:i - 1] + '0' + s[i - 1:]
-#                     i = i + 1
-
-#                 evaluated = str(evaluate_string(s))
-#                 if evaluated != 'None' and evaluated != 'False':
-                    
-#                     if str(evaluated)[-2:] == ".0":
-#                         evaluated = str(evaluated)[:-2]
-#                     self.view.replace(edit, region, evaluated)
-
-if __name__ == "__main__":
-    a = read_from_tokens(tokenize("3 * (4 + 3)**(2+2)"))
-    print eval_(None, a, [])
+class mathevaluatorCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        for region in self.view.sel():
+            if not region.empty():
+                s = self.view.substr(region)
+                strlen = len(s)
+                i = 0
+                while i != strlen:
+                    if s[i] == '.':
+                        if i == 0:
+                            s = "0" + s
+                            strlen = strlen + 1
+                            i = i + 1
+                        else:
+                            if not s[i - 1].isdigit():
+                                strlen = strlen + 1
+                                i = i + 1
+                                s = s[:i - 1] + '0' + s[i - 1:]
+                    i = i + 1
+                try:
+                    evaluated = str(eval_string(s))
+                    if str(evaluated)[-2:] == ".0":
+                        evaluated = str(evaluated)[:-2]
+                    self.view.replace(edit, region, evaluated)
+                except:
+                    pass
