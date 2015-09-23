@@ -1,4 +1,4 @@
-#import sublime, sublime_plugin
+import sublime, sublime_plugin
 import math
 import operator
 import sys
@@ -168,32 +168,32 @@ def eval_string(s):
     value = eval_(None, ast, [])
     return value
     
-# class mathevaluatorCommand(sublime_plugin.TextCommand):
-#     def run(self, edit):
-#         for region in self.view.sel():
-#             if not region.empty():
-#                 s = self.view.substr(region)
-#                 strlen = len(s)
-#                 i = 0
-#                 while i != strlen:
-#                     if s[i] == '.':
-#                         if i == 0:
-#                             s = "0" + s
-#                             strlen = strlen + 1
-#                             i = i + 1
-#                         else:
-#                             if not s[i - 1].isdigit():
-#                                 strlen = strlen + 1
-#                                 i = i + 1
-#                                 s = s[:i - 1] + '0' + s[i - 1:]
-#                     i = i + 1
-#                 try:
-#                     evaluated = str(eval_string(s))
-#                     if str(evaluated)[-2:] == ".0":
-#                         evaluated = str(evaluated)[:-2]
-#                     self.view.replace(edit, region, evaluated)
-#                 except:
-#                     pass
+class mathevaluatorCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        for region in self.view.sel():
+            if not region.empty():
+                s = self.view.substr(region)
+                strlen = len(s)
+                i = 0
+                while i != strlen:
+                    if s[i] == '.':
+                        if i == 0:
+                            s = "0" + s
+                            strlen = strlen + 1
+                            i = i + 1
+                        else:
+                            if not s[i - 1].isdigit():
+                                strlen = strlen + 1
+                                i = i + 1
+                                s = s[:i - 1] + '0' + s[i - 1:]
+                    i = i + 1
+                try:
+                    evaluated = str(eval_string(s))
+                    if str(evaluated)[-2:] == ".0":
+                        evaluated = str(evaluated)[:-2]
+                    self.view.replace(edit, region, evaluated)
+                except:
+                    pass
 
 def test(a, b):
     t = eval_string(a) == b
