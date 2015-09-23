@@ -1,7 +1,8 @@
 #import sublime, sublime_plugin
 import math
 import operator
-
+import sys
+import pdb
 
 # # infix operators =
 # +
@@ -49,7 +50,7 @@ environment = {
     "**":Atom(operator.pow,"infix"),
 }
 
-precedence = {environment["**"]:0}
+precedence = {environment['ln']:2, environment['sqrt']:2, environment['~']:2, environment['0b']:2, environment['0x']:2, environment["**"]:1, environment["*"]:0, environment["/"]:0}
 separators = ["(", ")"]
 keywords = environment.keys()
 
@@ -113,9 +114,16 @@ def eval_(a, b, li):
                 c = li.pop(0)
                 return eval_(val, c, li)
         else:
+            if len(li) >= 2:
+                pdb.set_trace()
+                op = li[0]
+                if type(op) != list and op in precedence and (not b in precedence or precedence[op] > precedence[b]):
+                    a_ = li.pop(0)
+                    b_ = li.pop(0)
+                    li.insert(0, atomize(eval_(b, a_, [b_])))
             if len(li) >= 3:
                 op = li[1]
-                if op in precedence and (not b in precedence or precedence[op] > precedence[b]):
+                if type(op) != list and op in precedence and (not b in precedence or precedence[op] > precedence[b]):
                     a_ = li.pop(0)
                     b_ = li.pop(0)
                     c_ = li.pop(0)
@@ -139,33 +147,46 @@ def eval_(a, b, li):
 
 def eval_string(s):
     tokens = tokenize(s)
+    print tokens
     ast = read_from_tokens(tokens)
+    print ast
     value = eval_(None, ast, [])
     return value
     
-class mathevaluatorCommand(sublime_plugin.TextCommand):
-    def run(self, edit):
-        for region in self.view.sel():
-            if not region.empty():
-                s = self.view.substr(region)
-                strlen = len(s)
-                i = 0
-                while i != strlen:
-                    if s[i] == '.':
-                        if i == 0:
-                            s = "0" + s
-                            strlen = strlen + 1
-                            i = i + 1
-                        else:
-                            if not s[i - 1].isdigit():
-                                strlen = strlen + 1
-                                i = i + 1
-                                s = s[:i - 1] + '0' + s[i - 1:]
-                    i = i + 1
-                try:
-                    evaluated = str(eval_string(s))
-                    if str(evaluated)[-2:] == ".0":
-                        evaluated = str(evaluated)[:-2]
-                    self.view.replace(edit, region, evaluated)
-                except:
-                    pass
+# class mathevaluatorCommand(sublime_plugin.TextCommand):
+#     def run(self, edit):
+#         for region in self.view.sel():
+#             if not region.empty():
+#                 s = self.view.substr(region)
+#                 strlen = len(s)
+#                 i = 0
+#                 while i != strlen:
+#                     if s[i] == '.':
+#                         if i == 0:
+#                             s = "0" + s
+#                             strlen = strlen + 1
+#                             i = i + 1
+#                         else:
+#                             if not s[i - 1].isdigit():
+#                                 strlen = strlen + 1
+#                                 i = i + 1
+#                                 s = s[:i - 1] + '0' + s[i - 1:]
+#                     i = i + 1
+#                 try:
+#                     evaluated = str(eval_string(s))
+#                     if str(evaluated)[-2:] == ".0":
+#                         evaluated = str(evaluated)[:-2]
+#                     self.view.replace(edit, region, evaluated)
+#                 except:
+#                     pass
+
+def test(a, b):
+    t = eval_string(a) == b
+    print eval_string(a)
+    if t:
+        print "Test %s passed!" % a
+
+if __name__ == "__main__" and "test" in sys.argv:
+    test("ln(3)", math.log(3))
+    test("ln(3) / ln(3)", 1)
+    
