@@ -29,7 +29,25 @@ import pdb
 class Atom:
     def __init__(self, value, type_):
         self.type_ = type_
-        self.value = value
+        if self.type_ == "value":
+            if type(value) == str:
+                if len(value) >= 2:
+                    if value[0] == "0":
+                        if value[1] == "b":
+                            self.value = eval('0b' + str(int(value[2:])))
+                        elif value[1] == "x":
+                            self.value = eval('0x' + str(int(value[2:])))
+                        elif value[1] in "0123456789":
+                            self.value = eval('0' + str(int(value[1:])))
+                    else:
+                        self.value = float(value)
+                else:
+                    self.value = float(value)
+            else:
+                self.value = value
+        else:
+            self.value = value
+
 
 environment = {
     "+":Atom(operator.add,"infix"),
@@ -42,15 +60,15 @@ environment = {
     "~":Atom(lambda x: operator.invert(int(x)),"prefix"),
     # "-":Atom(operator.neg,"prefix"),
     # "+":Atom(operator.neg,"prefix"),
-    "0b":Atom(lambda x: eval("0b"+str(int(x))),"prefix"),
-    "0x":Atom(lambda x: eval("0x"+str(int(x))),"prefix"),
+    #"0b":Atom(lambda x: eval("0b"+str(int(x))),"prefix"),
+    #"0x":Atom(lambda x: eval("0x"+str(int(x))),"prefix"),
     "ln":Atom(math.log, "prefix"),
     "sqrt":Atom(math.sqrt, "prefix"),
     "pi":Atom(math.pi, "value"),
     "**":Atom(operator.pow,"infix"),
 }
 
-precedence = {environment['ln']:2, environment['sqrt']:2, environment['~']:2, environment['0b']:2, environment['0x']:2, environment["**"]:1, environment["*"]:0, environment["/"]:0}
+precedence = {environment['ln']:2, environment['sqrt']:2, environment['~']:2, environment["**"]:1, environment["*"]:0, environment["/"]:0}
 separators = ["(", ")"]
 keywords = environment.keys()
 
@@ -58,7 +76,7 @@ def atomize(s):
     try:
         return environment[s]
     except:
-        return Atom(float(s), "value")
+        return Atom(s, "value")
     
 # separators
 def tokenize(s):
@@ -115,7 +133,6 @@ def eval_(a, b, li):
                 return eval_(val, c, li)
         else:
             if len(li) >= 2:
-                pdb.set_trace()
                 op = li[0]
                 if type(op) != list and op in precedence and (not b in precedence or precedence[op] > precedence[b]):
                     a_ = li.pop(0)
@@ -147,9 +164,7 @@ def eval_(a, b, li):
 
 def eval_string(s):
     tokens = tokenize(s)
-    print tokens
     ast = read_from_tokens(tokens)
-    print ast
     value = eval_(None, ast, [])
     return value
     
@@ -182,11 +197,12 @@ def eval_string(s):
 
 def test(a, b):
     t = eval_string(a) == b
-    print eval_string(a)
     if t:
         print "Test %s passed!" % a
 
 if __name__ == "__main__" and "test" in sys.argv:
     test("ln(3)", math.log(3))
     test("ln(3) / ln(3)", 1)
-    
+    test("2 * (33 + 33)**2", 2 * (33 + 33)**2)
+    test("0b01101*0x33", 0b01101*0x33)
+    test("0b01101*~0x33", 0b01101*~0x33)
