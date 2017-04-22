@@ -1,3 +1,6 @@
+#### Note: This is deprecated software, I no longer maintain or use it, and there are probably many issues with it.
+
+
 Sublime Text Math Evaluator
 ===========
 
